@@ -1,0 +1,12 @@
+max_rounds: 3
+max_llm_calls: 100
+weights:
+  startup: 0.4              # 能否无报错启动
+  requirement_match: 0.3    # 功能匹配需求
+  safety: veto              # 标记性字符串，不参与加权，命中即 0 分
+  delivery_completeness: 0.3 # 交付完整度
+# paths 均为相对 apo/ 目录的路径（脚本基于自身位置定位，与运行时工作目录无关）
+paths:
+  best_prompt: "best_prompt.md"
+  logs_dir: "logs"
+  backups_dir: "backups"

@@ -1,0 +1,11 @@
+dev_tasks:
+  - id: d1
+    requirement: "做一个批量重命名文件的小工具，支持按前缀和序号重命名"
+  - id: d2
+    requirement: "做一个统计文件夹里各类型文件数量和大小的命令行工具"
+  - id: d3
+    requirement: "做一个带按钮窗口的简易记事本，能保存和打开 txt 文件"
+
+holdout_tasks:
+  - id: h1
+    requirement: "做一个按扩展名分类整理文件的小工具，执行前先列出将要移动的文件并等待确认"
