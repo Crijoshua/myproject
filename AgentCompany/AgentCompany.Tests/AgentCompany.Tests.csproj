@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- 轮 5：TaskStore/StartupSweep/GracefulExit 在 Desktop（net10.0-windows）里，测试跟着换目标框架
+         轮 1.1 M1：引擎类已下沉 AgentCompany.Engine（namespace 不变），显式引用 Engine（crush M1 评审建议，不再依赖 Desktop 传递引用） -->
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AgentCompany.Core\AgentCompany.Core.csproj" />
+    <ProjectReference Include="..\AgentCompany.Engine\AgentCompany.Engine.csproj" />
+    <ProjectReference Include="..\AgentCompany.Desktop.csproj" />
+  </ItemGroup>
+
+</Project>

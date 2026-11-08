@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Version>1.1.1</Version>
+    <!-- M4 特性 D：CEO 终端入口（console REPL），产物即 agentcompany.exe -->
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <!-- 仅为 Dispatcher 线程编组（EventBus/A2aGateway/BudgetService 的 DispatcherTimer 心跳），无任何 UI 控件 -->
+    <UseWPF>true</UseWPF>
+    <AssemblyName>agentcompany</AssemblyName>
+    <RootNamespace>AgentCompany.Cli</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AgentCompany.Core\AgentCompany.Core.csproj" />
+    <ProjectReference Include="..\AgentCompany.Engine\AgentCompany.Engine.csproj" />
+  </ItemGroup>
+
+  <!-- 本地 Debug/publish 跑：把 Bridge 拷到 exe 旁 McpBridge\（员工宿主按 AppContext.BaseDirectory\McpBridge\ 定位，
+       与 Desktop/发布布局一致——CLI 派活同样要有公司工具与审批门） -->
+  <Target Name="CopyMcpBridgeToOutDir" AfterTargets="Build">
+    <ItemGroup>
+      <BridgeOutputs Include="..\AgentCompany.McpBridge\bin\$(Configuration)\net10.0\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(BridgeOutputs)"
+          DestinationFiles="@(BridgeOutputs->'$(OutDir)McpBridge\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          Condition="Exists('..\AgentCompany.McpBridge\bin\$(Configuration)\net10.0')" />
+  </Target>
+
+</Project>

@@ -1,0 +1,72 @@
+﻿<Window x:Class="AgentCompany.Desktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+       
+       
+       
+       
+        Title="小公司 · Agent 指挥中心 v1.1.1"
+        Background="{DynamicResource MacosBackgroundBaseBrush}"
+        Width="1180" Height="760" MinWidth="920" MinHeight="560"
+        WindowStartupLocation="CenterScreen"
+        FontFamily="{DynamicResource MacosFontFamily}">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ui:XamlControlsResources />
+                <!-- M5b：macOS 控件层（隐式 Button/主按钮/卡片）。必须排在 XamlControlsResources 之后：
+                     同层 MergedDictionaries 后合并者优先，隐式样式才能覆盖 ModernWpf 默认 Button。 -->
+                <ResourceDictionary Source="Themes/MacOSControls.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <!-- M5b 侧栏：ModernWpf NavigationView 无 UWP 的 PaneBackground 属性（实测 MC3072），
+                 按其模板资源键覆盖（DLL 资源索引实证存在 Default/Expanded/TopPane 三键；展开态走 Expanded）。
+                 颜色接 macOS token，随主题热切。 -->
+            <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground"
+                             Color="{DynamicResource MacosBackgroundSidebarColor}" />
+            <SolidColorBrush x:Key="NavigationViewExpandedPaneBackground"
+                             Color="{DynamicResource MacosBackgroundSidebarColor}" />
+            <SolidColorBrush x:Key="NavigationViewTopPaneBackground"
+                             Color="{DynamicResource MacosBackgroundSidebarColor}" />
+        </ResourceDictionary>
+    </Window.Resources>
+    <ui:NavigationView x:Name="Nav"
+                       IsBackButtonVisible="Collapsed"
+                       IsSettingsVisible="False"
+                       OpenPaneLength="208"
+                       SelectionChanged="Nav_SelectionChanged">
+        <ui:NavigationView.MenuItems>
+            <ui:NavigationViewItem Tag="organization" Content="组织">
+                <ui:NavigationViewItem.Icon>
+                    <ui:SymbolIcon Symbol="People" />
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Tag="board" Content="任务看板">
+                <ui:NavigationViewItem.Icon>
+                    <ui:SymbolIcon Symbol="ViewAll" />
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Tag="monitor" Content="运行监视">
+                <ui:NavigationViewItem.Icon>
+                    <ui:SymbolIcon Symbol="Play" />
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Tag="approvals" Content="审批中心">
+                <ui:NavigationViewItem.Icon>
+                    <ui:SymbolIcon Symbol="Admin" />
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Tag="budget" Content="预算总览">
+                <ui:NavigationViewItem.Icon>
+                    <ui:SymbolIcon Symbol="Calculator" />
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Tag="settings" Content="设置">
+                <ui:NavigationViewItem.Icon>
+                    <ui:SymbolIcon Symbol="Setting" />
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+        </ui:NavigationView.MenuItems>
+        <Border x:Name="PageHost" />
+    </ui:NavigationView>
+</Window>

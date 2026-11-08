@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>AgentCompany</AssemblyName>
+    <RootNamespace>AgentCompany.Desktop</RootNamespace>
+    <Version>1.1.1</Version>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <SatelliteResourceLanguages>zh-Hans;en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ModernWpfUI" Version="1.0.0-rc.1" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.13" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- 验收/复现脚本工具与兄弟项目源码不参与编译（tools\pipe.cs 的顶层语句会抢占 WPF 入口点）；M1 起引擎在 AgentCompany.Engine 项目里，由下方 ProjectReference 引入；M4 起新增 AgentCompany.Cli（其 obj\ 生成属性会被根目录 glob 误收，同条款排除）；
+         M5b 前置修复：仓库迁移到 github\ 后 AgentCompany-snapshots\（各里程碑代码快照，原在仓库外）落入根 glob——同条款排除，恢复 build 0 错 -->
+    <Compile Remove="tools\**;AgentCompany.Core\**;AgentCompany.McpBridge\**;AgentCompany.Tests\**;AgentCompany.Engine\**;AgentCompany.Cli\**;AgentCompany-snapshots\**" />
+    <!-- 快照里的 .xaml 同样会被默认 Page glob 收进标记编译并往 obj 生成同名 .g.cs（与真源码类冲突），一并排除 -->
+    <Page Remove="AgentCompany-snapshots\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="AgentCompany.Core\AgentCompany.Core.csproj" />
+    <!-- M1「引擎下沉」：引擎类已移至本项目，namespace 仍为 AgentCompany.Desktop.Services -->
+    <ProjectReference Include="AgentCompany.Engine\AgentCompany.Engine.csproj" />
+    <!-- 只取构建顺序不取输出（exe 间不互引）；发布由 发布.bat 双发布到 publish\ 与 publish\McpBridge\ -->
+    <ProjectReference Include="AgentCompany.McpBridge\AgentCompany.McpBridge.csproj" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <!-- 本地 Debug 跑：把 Bridge 拷到 exe 旁的 McpBridge\（与发布布局一致） -->
+  <Target Name="CopyMcpBridgeToOutDir" AfterTargets="Build">
+    <ItemGroup>
+      <BridgeOutputs Include="AgentCompany.McpBridge\bin\$(Configuration)\net10.0\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(BridgeOutputs)"
+          DestinationFiles="@(BridgeOutputs->'$(OutDir)McpBridge\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          Condition="Exists('AgentCompany.McpBridge\bin\$(Configuration)\net10.0')" />
+  </Target>
+
+</Project>

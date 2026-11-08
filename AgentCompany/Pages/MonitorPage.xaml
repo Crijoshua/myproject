@@ -1,0 +1,214 @@
+<UserControl x:Class="AgentCompany.Desktop.Pages.MonitorPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Resources>
+        <Style x:Key="Panel" TargetType="Border">
+            <Setter Property="CornerRadius" Value="{DynamicResource MacosRadiusCard}" />
+            <Setter Property="Padding" Value="14" />
+            <Setter Property="Background" Value="{DynamicResource MacosBackgroundElevatedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource MacosSeparatorBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Effect" Value="{DynamicResource MacosCardShadow}" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="28,16,24,10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- 标题行：标题 + 状态徽标 + 历史会话 -->
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="运行监视" FontSize="{DynamicResource MacosFontSizeTitle}" FontWeight="SemiBold" VerticalAlignment="Center"
+                       Foreground="{DynamicResource MacosTextPrimaryBrush}" />
+            <Border Grid.Column="1" x:Name="StateBadge" CornerRadius="10" Padding="10,3" Margin="14,0,0,0"
+                    VerticalAlignment="Center" Background="#29608060">
+                <TextBlock x:Name="StateBadgeText" AutomationProperties.AutomationId="StateBadge" FontSize="{DynamicResource MacosFontSizeCaption}" Text="空闲"
+                           Foreground="{DynamicResource MacosTextSecondaryBrush}" />
+            </Border>
+            <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="历史会话 " FontSize="{DynamicResource MacosFontSizeBody}" Opacity="0.7" VerticalAlignment="Center"
+                           Foreground="{DynamicResource MacosTextSecondaryBrush}" />
+                <TextBlock x:Name="SessionCountText" AutomationProperties.AutomationId="SessionCount" FontSize="{DynamicResource MacosFontSizeBody}"
+                           FontWeight="SemiBold" Text="0 次" VerticalAlignment="Center" />
+            </StackPanel>
+        </Grid>
+
+        <!-- 轮 5：员工状态条（claude / opencode：空闲 / 运行中·当前动作·已耗时） -->
+        <Border Grid.Row="1" Style="{StaticResource Panel}" Margin="0,10,0,0" Padding="12,8">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Border Width="8" Height="8" CornerRadius="4" Background="{DynamicResource MacosAccentBrush}" VerticalAlignment="Center" />
+                    <TextBlock Text="claude" FontSize="{DynamicResource MacosFontSizeBody}" FontWeight="SemiBold" Margin="8,0,0,0" Width="78"
+                               VerticalAlignment="Center" />
+                    <TextBlock x:Name="ClaudeBarText" AutomationProperties.AutomationId="AgentBarClaude"
+                               FontSize="{DynamicResource MacosFontSizeCaption}" TextTrimming="CharacterEllipsis" Text="空闲" VerticalAlignment="Center"
+                               Foreground="{DynamicResource MacosTextSecondaryBrush}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <Border Width="8" Height="8" CornerRadius="4" Background="{DynamicResource MacosSuccessBrush}" VerticalAlignment="Center" />
+                    <TextBlock Text="opencode" FontSize="{DynamicResource MacosFontSizeBody}" FontWeight="SemiBold" Margin="8,0,0,0" Width="78"
+                               VerticalAlignment="Center" />
+                    <TextBlock x:Name="OpencodeBarText" AutomationProperties.AutomationId="AgentBarOpencode"
+                               FontSize="{DynamicResource MacosFontSizeCaption}" TextTrimming="CharacterEllipsis" Text="空闲" VerticalAlignment="Center"
+                               Foreground="{DynamicResource MacosTextSecondaryBrush}" />
+                </StackPanel>
+                <!-- 轮 7：crush（纯文本员工，无事件流——运行中显示占位，完成后全文进事件流） -->
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <Border Width="8" Height="8" CornerRadius="4" Background="#B146C2" VerticalAlignment="Center" />
+                    <TextBlock Text="crush" FontSize="{DynamicResource MacosFontSizeBody}" FontWeight="SemiBold" Margin="8,0,0,0" Width="78"
+                               VerticalAlignment="Center" />
+                    <TextBlock x:Name="CrushBarText" AutomationProperties.AutomationId="AgentBarCrush"
+                               FontSize="{DynamicResource MacosFontSizeCaption}" TextTrimming="CharacterEllipsis" Text="空闲" VerticalAlignment="Center"
+                               Foreground="{DynamicResource MacosTextSecondaryBrush}" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- 任务输入区 -->
+        <Border Grid.Row="2" Style="{StaticResource Panel}" Margin="0,10,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="TaskInput" AutomationProperties.AutomationId="TaskInput"
+                         TextWrapping="Wrap" AcceptsReturn="True" MinHeight="52" MaxHeight="96"
+                         VerticalScrollBarVisibility="Auto"
+                         FontSize="{DynamicResource MacosFontSizeBody}" VerticalContentAlignment="Top" />
+                <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Bottom">
+                    <Button x:Name="DispatchButton" AutomationProperties.AutomationId="DispatchButton" Content="派活"
+                            Style="{DynamicResource MacosAccentButton}"
+                            MinWidth="88" Margin="0,0,0,6" Click="OnDispatchClick" />
+                    <Button x:Name="CancelButton" AutomationProperties.AutomationId="CancelButton" Content="终止"
+                            MinWidth="88" Margin="0" Click="OnCancelClick" IsEnabled="False" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- 状态详情行 -->
+        <TextBlock Grid.Row="3" x:Name="StatusDetail" AutomationProperties.AutomationId="StatusDetail" Margin="2,6,0,0"
+                   FontSize="{DynamicResource MacosFontSizeCaption}" Opacity="0.75" Text="claude 待命中 · 点击[派活]下达任务"
+                   Foreground="{DynamicResource MacosTextSecondaryBrush}" />
+
+        <!-- 完成摘要 -->
+        <Border Grid.Row="4" x:Name="SummaryPanel" Style="{StaticResource Panel}" Margin="0,8,0,0"
+                Visibility="Collapsed">
+            <StackPanel>
+                <TextBlock FontSize="{DynamicResource MacosFontSizeBody}" FontWeight="SemiBold" Margin="0,0,0,4"
+                           Foreground="{DynamicResource MacosTextPrimaryBrush}" Text="最终回复" />
+                <TextBlock x:Name="ReplyText" AutomationProperties.AutomationId="ReplyText" TextWrapping="Wrap" MaxHeight="120"
+                           FontSize="{DynamicResource MacosFontSizeBody}" Text="—" />
+                <TextBlock x:Name="UsageText" AutomationProperties.AutomationId="UsageText" Margin="0,6,0,0" FontSize="{DynamicResource MacosFontSizeCaption}"
+                           Opacity="0.8" Text="—"
+                           Foreground="{DynamicResource MacosTextSecondaryBrush}" />
+            </StackPanel>
+        </Border>
+
+        <!-- 事件流 -->
+        <Grid Grid.Row="5" Margin="0,10,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Margin="0,0,0,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" FontSize="{DynamicResource MacosFontSizeBody}" FontWeight="SemiBold" VerticalAlignment="Center"
+                           Foreground="{DynamicResource MacosTextPrimaryBrush}"
+                           Text="事件流（实时，最近 500 条）" />
+                <ComboBox Grid.Column="1" x:Name="AgentFilter" AutomationProperties.AutomationId="AgentFilter"
+                          MinWidth="110" Margin="12,0,0,0" VerticalAlignment="Center" SelectedIndex="0"
+                          SelectionChanged="OnAgentFilterChanged">
+                    <ComboBoxItem Content="全部" Tag="" />
+                    <ComboBoxItem Content="claude" Tag="claude" />
+                    <ComboBoxItem Content="opencode" Tag="opencode" />
+                    <ComboBoxItem Content="crush" Tag="crush" />
+                </ComboBox>
+            </Grid>
+            <Border Grid.Row="1" Style="{StaticResource Panel}" Padding="2">
+                <ListView x:Name="EventList" AutomationProperties.AutomationId="EventList"
+                          BorderThickness="0" Background="Transparent"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                          VirtualizingPanel.IsVirtualizing="True"
+                          VirtualizingPanel.VirtualizationMode="Recycling">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <!-- 左侧色条：claude 蓝 / opencode 绿 / 未署名灰 -->
+                                <Border Width="3" CornerRadius="1.5" Margin="0,2,8,2" VerticalAlignment="Stretch">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="#44808080" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Agent}" Value="claude">
+                                                    <Setter Property="Background" Value="#0078D7" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Agent}" Value="opencode">
+                                                    <Setter Property="Background" Value="#107C10" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Agent}" Value="crush">
+                                                    <Setter Property="Background" Value="#B146C2" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                </Border>
+                                <TextBlock Text="{Binding Display}" TextWrapping="Wrap" FontSize="{DynamicResource MacosFontSizeBody}"
+                                           FontFamily="Consolas, Microsoft YaHei UI" Opacity="{Binding DimOpacity}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Border>
+        </Grid>
+
+        <!-- 诊断日志（折叠；轮 5：黑匣子 events 表回填 + 按类型筛选） -->
+        <Expander Grid.Row="6" Margin="0,8,0,0">
+            <Expander.Header>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="诊断日志" FontSize="{DynamicResource MacosFontSizeBody}" VerticalAlignment="Center" />
+                    <ComboBox x:Name="DiagTypeFilter" AutomationProperties.AutomationId="DiagTypeFilter"
+                              MinWidth="96" Margin="12,0,0,0" VerticalAlignment="Center" SelectedIndex="0"
+                              SelectionChanged="OnDiagFilterChanged">
+                        <ComboBoxItem Content="全部" Tag="" />
+                        <ComboBoxItem Content="任务" Tag="task" />
+                        <ComboBoxItem Content="审批" Tag="approval" />
+                        <ComboBoxItem Content="清扫" Tag="sweep" />
+                        <ComboBoxItem Content="退出" Tag="exit" />
+                        <ComboBoxItem Content="中断" Tag="interrupt" />
+                        <ComboBoxItem Content="预算" Tag="budget" />
+                        <ComboBoxItem Content="自检" Tag="selfcheck" />
+                    </ComboBox>
+                </StackPanel>
+            </Expander.Header>
+            <Border Style="{StaticResource Panel}" Padding="2" MaxHeight="140">
+                <ListView x:Name="DiagList" AutomationProperties.AutomationId="DiagList" BorderThickness="0" Background="Transparent"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                          VirtualizingPanel.IsVirtualizing="True">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Display}" TextWrapping="Wrap" FontSize="{DynamicResource MacosFontSizeCaption}"
+                                       FontFamily="Consolas, Microsoft YaHei UI" Opacity="0.7" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Border>
+        </Expander>
+    </Grid>
+</UserControl>

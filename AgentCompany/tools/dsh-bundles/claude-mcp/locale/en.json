@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Claude Code MCP Connection",
+    "description": "Connects the local Claude Code CLI (claude mcp serve, stdio) so the agent can dispatch engineering tasks to it as MCP tools."
+  }
+}

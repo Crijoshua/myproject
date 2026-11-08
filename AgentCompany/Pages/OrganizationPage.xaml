@@ -1,0 +1,143 @@
+<UserControl x:Class="AgentCompany.Desktop.Pages.OrganizationPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Resources>
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="CornerRadius" Value="{DynamicResource MacosRadiusCard}" />
+            <Setter Property="Padding" Value="20,18" />
+            <Setter Property="Margin" Value="0,0,12,12" />
+            <Setter Property="Background" Value="{DynamicResource MacosBackgroundElevatedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource MacosSeparatorBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Effect" Value="{DynamicResource MacosCardShadow}" />
+        </Style>
+        <Style x:Key="Pill" TargetType="Border">
+            <Setter Property="CornerRadius" Value="{DynamicResource MacosRadiusPill}" />
+            <Setter Property="Background" Value="#29808080" />
+            <Setter Property="Padding" Value="10,3" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+        <Style x:Key="PillText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="{DynamicResource MacosFontSizeCaption}" />
+            <Setter Property="Foreground" Value="{DynamicResource MacosTextSecondaryBrush}" />
+        </Style>
+        <Style x:Key="Avatar" TargetType="Border">
+            <Setter Property="Width" Value="44" />
+            <Setter Property="Height" Value="44" />
+            <Setter Property="CornerRadius" Value="22" />
+            <Setter Property="Background" Value="{DynamicResource MacosAccentBrush}" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+        <Style x:Key="AvatarText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="28,20,24,12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="组织" FontSize="{DynamicResource MacosFontSizeTitle}" FontWeight="SemiBold"
+                   Foreground="{DynamicResource MacosTextPrimaryBrush}" />
+        <TextBlock Grid.Row="1" Margin="0,4,0,16" FontSize="{DynamicResource MacosFontSizeBody}" Opacity="0.7"
+                   Foreground="{DynamicResource MacosTextSecondaryBrush}"
+                   Text="三位数字员工满编：claude（CEO 兼首席）· opencode（主力执行）· crush（测试评审）" />
+
+        <UniformGrid Grid.Row="2" Columns="1">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <Border Style="{StaticResource Card}" x:Name="ClaudeCard">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.Column="0" Style="{StaticResource Avatar}" Margin="0,0,14,0">
+                                    <TextBlock Style="{StaticResource AvatarText}" Text="C" />
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock FontSize="{DynamicResource MacosFontSizeBody}" FontWeight="SemiBold" Text="claude" />
+                                    <TextBlock x:Name="ClaudeModelText" AutomationProperties.AutomationId="ClaudeModel"
+                                               FontSize="{DynamicResource MacosFontSizeBody}" Opacity="0.7"
+                                               Foreground="{DynamicResource MacosTextSecondaryBrush}"
+                                               Text="CEO 兼首席 · 战略规划 / 架构决策 / 任务分派" />
+                                    <!-- 轮 8 自检：就绪 / 未安装（不可用时整卡灰显 + 派活被禁） -->
+                                    <TextBlock x:Name="ClaudeReadyText" AutomationProperties.AutomationId="ClaudeReady"
+                                               FontSize="{DynamicResource MacosFontSizeCaption}" Margin="0,4,0,0" Text="自检：就绪" />
+                                </StackPanel>
+                                <Border Grid.Column="2" x:Name="ClaudeBadge" Style="{StaticResource Pill}" VerticalAlignment="Center">
+                                    <TextBlock x:Name="ClaudeBadgeText" AutomationProperties.AutomationId="ClaudeBadge"
+                                               Style="{StaticResource PillText}" Text="空闲" />
+                                </Border>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}" x:Name="OpencodeCard">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.Column="0" Style="{StaticResource Avatar}" Margin="0,0,14,0">
+                                    <TextBlock Style="{StaticResource AvatarText}" Text="O" />
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock FontSize="{DynamicResource MacosFontSizeBody}" FontWeight="SemiBold" Text="opencode" />
+                                    <TextBlock x:Name="OpencodeModelText" AutomationProperties.AutomationId="OpencodeModel"
+                                               FontSize="{DynamicResource MacosFontSizeBody}" Opacity="0.7"
+                                               Foreground="{DynamicResource MacosTextSecondaryBrush}"
+                                               Text="主力执行 · model=智谱 Coding Plan · 代码实现 / 修 Bug / 跑构建" />
+                                    <TextBlock x:Name="OpencodeReadyText" AutomationProperties.AutomationId="OpencodeReady"
+                                               FontSize="{DynamicResource MacosFontSizeCaption}" Margin="0,4,0,0" Text="自检：就绪" />
+                                </StackPanel>
+                                <Border Grid.Column="2" x:Name="OpencodeBadge" Style="{StaticResource Pill}" VerticalAlignment="Center">
+                                    <TextBlock x:Name="OpencodeBadgeText" AutomationProperties.AutomationId="OpencodeBadge"
+                                               Style="{StaticResource PillText}" Text="空闲" />
+                                </Border>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}" Margin="0,0,12,0" x:Name="CrushCard">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.Column="0" Style="{StaticResource Avatar}" Margin="0,0,14,0">
+                                    <TextBlock Style="{StaticResource AvatarText}" Text="X" />
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock FontSize="{DynamicResource MacosFontSizeBody}" FontWeight="SemiBold" Text="crush" />
+                                    <TextBlock FontSize="{DynamicResource MacosFontSizeBody}" Opacity="0.7" TextWrapping="Wrap"
+                                               Foreground="{DynamicResource MacosTextSecondaryBrush}"
+                                               Text="测试评审 · model=glm-5.3-flash · 纯文本评审（token 记 0 · 墙钟计量）· 只读代码与产物，输出中文评审报告（宿主代存 review.md）" />
+                                    <TextBlock x:Name="CrushReadyText" AutomationProperties.AutomationId="CrushReady"
+                                               FontSize="{DynamicResource MacosFontSizeCaption}" Margin="0,4,0,0" Text="自检：就绪" />
+                                </StackPanel>
+                                <Border Grid.Column="2" x:Name="CrushBadge" Style="{StaticResource Pill}" VerticalAlignment="Center">
+                                    <TextBlock x:Name="CrushBadgeText" AutomationProperties.AutomationId="CrushBadge"
+                                               Style="{StaticResource PillText}" Text="空闲" />
+                                </Border>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </UniformGrid>
+    </Grid>
+</UserControl>

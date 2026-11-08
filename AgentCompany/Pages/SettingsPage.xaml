@@ -1,0 +1,259 @@
+﻿<UserControl x:Class="AgentCompany.Desktop.Pages.SettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="28,20,24,20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Text="设置" FontSize="{DynamicResource MacosFontSizeTitle}" FontWeight="SemiBold"
+                   Foreground="{DynamicResource MacosTextPrimaryBrush}" />
+
+            <!-- 外观 -->
+            <TextBlock Grid.Row="1" Margin="0,20,0,8" FontSize="{DynamicResource MacosFontSizeBody}" FontWeight="SemiBold"
+                       Foreground="{DynamicResource MacosTextPrimaryBrush}" Text="外观" />
+            <StackPanel Grid.Row="2" Margin="4,0,0,4">
+                <RadioButton x:Name="RbLight" GroupName="theme" Content="亮色" Margin="0,4" Checked="OnThemeChecked" />
+                <RadioButton x:Name="RbDark" GroupName="theme" Content="暗色" Margin="0,4" Checked="OnThemeChecked" />
+                <RadioButton x:Name="RbSystem" GroupName="theme" Content="跟随系统" Margin="0,4" Checked="OnThemeChecked" />
+                <TextBlock Margin="0,8,0,0" FontSize="{DynamicResource MacosFontSizeCaption}" Opacity="0.55"
+                           Foreground="{DynamicResource MacosTextSecondaryBrush}"
+                           Text="主题选择即时生效，并写入状态库 settings 表（重启后保持）" />
+            </StackPanel>
+
+            <!-- 任务 -->
+            <TextBlock Grid.Row="3" Margin="0,24,0,8" FontSize="{DynamicResource MacosFontSizeBody}" FontWeight="SemiBold"
+                       Foreground="{DynamicResource MacosTextPrimaryBrush}" Text="任务" />
+            <StackPanel Grid.Row="4" Margin="4,0,0,4">
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                    <TextBlock Text="任务超时（秒）" FontSize="{DynamicResource MacosFontSizeBody}" VerticalAlignment="Center" />
+                    <TextBox x:Name="TimeoutInput" AutomationProperties.AutomationId="TimeoutInput"
+                             Width="90" Margin="12,0,0,0" TextAlignment="Center" VerticalAlignment="Center"
+                             LostFocus="OnTimeoutLostFocus" />
+                    <TextBlock Text="默认 180，超时自动终止进程树" Margin="10,0,0,0" FontSize="{DynamicResource MacosFontSizeCaption}" Opacity="0.55"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource MacosTextSecondaryBrush}" />
+                </StackPanel>
+                <!-- 轮 7：多任务并发上限（1–4）；任务内波次并行与节点并发不受影响 -->
+                <StackPanel Orientation="Horizontal" Margin="0,10,0,4">
+                    <TextBlock Text="同时运行任务数上限" FontSize="{DynamicResource MacosFontSizeBody}" VerticalAlignment="Center" />
+                    <TextBox x:Name="MaxParallelInput" AutomationProperties.AutomationId="MaxParallelInput"
+                             Width="90" Margin="12,0,0,0" TextAlignment="Center" VerticalAlignment="Center"
+                             LostFocus="OnMaxParallelLostFocus" />
+                    <TextBlock Text="1–4，默认 2；超出的任务 FIFO 排队（卡片显示“排队中”）" Margin="10,0,0,0" FontSize="{DynamicResource MacosFontSizeCaption}"
+                               Opacity="0.55" VerticalAlignment="Center"
+                               Foreground="{DynamicResource MacosTextSecondaryBrush}" />
+                </StackPanel>
+                <!-- v1.1 B1：单任务 DAG 节点并发上限（1–4，默认 2 = v1.0 行为）；同员工节点本任务内自动串行 -->
+                <StackPanel Orientation="Horizontal" Margin="0,10,0,4">
+                    <TextBlock Text="单任务节点并发上限" FontSize="{DynamicResource MacosFontSizeBody}" VerticalAlignment="Center" />
+                    <TextBox x:Name="MaxNodeParallelismBox" AutomationProperties.AutomationId="MaxNodeParallelismBox"
+                             Width="90" Margin="12,0,0,0" TextAlignment="Center" VerticalAlignment="Center"
+                             LostFocus="OnMaxNodeParallelismLostFocus" />
+                    <TextBlock Text="1–4，默认 2；非法输入回落 2。同员工节点自动串行，跨员工才并行" Margin="10,0,0,0" FontSize="{DynamicResource MacosFontSizeCaption}"
+                               Opacity="0.55" VerticalAlignment="Center"
+                               Foreground="{DynamicResource MacosTextSecondaryBrush}" />
+                </StackPanel>
+            </StackPanel>
+
+            <!-- 审批（轮 3） -->
+            <TextBlock Grid.Row="5" Margin="0,24,0,8" FontSize="{DynamicResource MacosFontSizeBody}" FontWeight="SemiBold"
+                       Foreground="{DynamicResource MacosTextPrimaryBrush}" Text="审批" />
+            <StackPanel Grid.Row="6" Margin="4,0,0,4">
+                <CheckBox x:Name="ApprovalDialogToggle" AutomationProperties.AutomationId="ApprovalDialogToggle"
+                          Content="审批请求弹出对话框显示完整命令" Margin="0,4"
+                          Checked="OnApprovalDialogToggle" Unchecked="OnApprovalDialogToggle" />
+                <TextBlock Margin="0,6,0,0" FontSize="{DynamicResource MacosFontSizeCaption}" Opacity="0.55"
+                           Foreground="{DynamicResource MacosTextSecondaryBrush}"
+                           Text="关闭后审批请求只进审批中心列表，不再弹窗。审批等待上限 120 秒，超时按拒绝处理。" />
+            </StackPanel>
+
+            <!-- 可移植与自检（轮 8） -->
+            <TextBlock Grid.Row="7" Margin="0,24,0,8" FontSize="{DynamicResource MacosFontSizeBody}" FontWeight="SemiBold"
+                       Foreground="{DynamicResource MacosTextPrimaryBrush}" Text="可移植与自检" />
+            <StackPanel Grid.Row="8" Margin="4,0,0,4">
+                <TextBlock Text="工作区根目录" FontSize="{DynamicResource MacosFontSizeBody}" Margin="0,4,0,2" />
+                <TextBox x:Name="WorkspaceRootInput" AutomationProperties.AutomationId="WorkspaceRootInput"
+                         FontSize="{DynamicResource MacosFontSizeBody}" Margin="0,2,0,2" LostFocus="OnWorkspaceRootLostFocus" />
+                <TextBlock FontSize="{DynamicResource MacosFontSizeCaption}" Opacity="0.55" Margin="0,2,0,8"
+                           Foreground="{DynamicResource MacosTextSecondaryBrush}"
+                           Text="留空 = 主程序 exe 旁的 workspace\（整个 publish 文件夹拷到哪、工作区跟到哪）。改动只影响新任务，历史任务记录不迁移。" />
+
+                <TextBlock Text="claude 路径覆盖" FontSize="{DynamicResource MacosFontSizeBody}" Margin="0,4,0,2" />
+                <TextBox x:Name="CliPathClaude" AutomationProperties.AutomationId="CliPathClaude"
+                         FontSize="{DynamicResource MacosFontSizeBody}" Margin="0,2,0,2" LostFocus="OnCliPathLostFocus" />
+                <TextBlock Text="opencode 路径覆盖" FontSize="{DynamicResource MacosFontSizeBody}" Margin="0,6,0,2" />
+                <TextBox x:Name="CliPathOpencode" AutomationProperties.AutomationId="CliPathOpencode"
+                         FontSize="{DynamicResource MacosFontSizeBody}" Margin="0,2,0,2" LostFocus="OnCliPathLostFocus" />
+                <TextBlock Text="crush 路径覆盖" FontSize="{DynamicResource MacosFontSizeBody}" Margin="0,6,0,2" />
+                <TextBox x:Name="CliPathCrush" AutomationProperties.AutomationId="CliPathCrush"
+                         FontSize="{DynamicResource MacosFontSizeBody}" Margin="0,2,0,2" LostFocus="OnCliPathLostFocus" />
+                <TextBlock FontSize="{DynamicResource MacosFontSizeCaption}" Opacity="0.55" Margin="0,2,0,8"
+                           Foreground="{DynamicResource MacosTextSecondaryBrush}"
+                           Text="三项留空 = 从 PATH 查找（npm 全局安装即可）。填绝对路径可指定到具体 .cmd/.exe；改完点下方[重新自检]生效。" />
+
+                <StackPanel Orientation="Horizontal" Margin="0,4,0,6">
+                    <Button x:Name="ReselfCheckButton" AutomationProperties.AutomationId="ReselfCheckButton"
+                            Content="重新自检" MinWidth="110" Click="OnReselfCheckClick" />
+                    <Button x:Name="OpenDataFolderButton" AutomationProperties.AutomationId="OpenDataFolderButton"
+                            Content="打开数据文件夹" MinWidth="130" Margin="10,0,0,0" Click="OnOpenDataFolderClick" />
+                    <Button x:Name="BackupDbButton" AutomationProperties.AutomationId="BackupDbButton"
+                            Content="备份状态库" MinWidth="110" Margin="10,0,0,0" Click="OnBackupDbClick" />
+                    <!-- M4 特性 D：把本程序所在目录（publish 根，agentcompany.cmd 所在）写入用户 PATH -->
+                    <Button x:Name="InstallCliCommand" AutomationProperties.AutomationId="InstallCliCommand"
+                            Content="安装终端命令" MinWidth="130" Margin="10,0,0,0" Click="OnInstallCliCommandClick" />
+                    <TextBlock x:Name="CliInstallStatus" AutomationProperties.AutomationId="CliInstallStatus"
+                               Text="终端命令：未安装" FontSize="{DynamicResource MacosFontSizeCaption}" Margin="12,0,0,0" VerticalAlignment="Center"
+                               Foreground="{DynamicResource MacosTextSecondaryBrush}" />
+                </StackPanel>
+                <!-- 安装结果就地提示（非模态：模态框会卡住 UIA 自动化） -->
+                <TextBlock x:Name="CliInstallResultText" AutomationProperties.AutomationId="CliInstallResultText"
+                           FontSize="{DynamicResource MacosFontSizeCaption}" Margin="0,0,0,6" TextWrapping="Wrap" Text="" />
+                <!-- 备份结果就地提示（非模态：模态框会卡住 UIA 自动化与流水线） -->
+                <TextBlock x:Name="BackupResultText" AutomationProperties.AutomationId="BackupResultText"
+                           FontSize="{DynamicResource MacosFontSizeCaption}" Margin="0,0,0,6" TextWrapping="Wrap" Text="" />
+                <ItemsControl x:Name="SelfCheckList" AutomationProperties.AutomationId="SelfCheckList" Margin="0,4,0,0">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Line}" AutomationProperties.AutomationId="SelfCheckRow"
+                                       FontSize="{DynamicResource MacosFontSizeCaption}" FontFamily="Consolas, Microsoft YaHei UI"
+                                       TextWrapping="Wrap" Margin="0,1,0,1" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+            <!-- 提示词（M2b 特性 A）：四键外置编辑，保存前锚点校验防改坏，坏文件回退内置 -->
+            <TextBlock Grid.Row="9" Margin="0,24,0,8" FontSize="{DynamicResource MacosFontSizeBody}" FontWeight="SemiBold"
+                       Foreground="{DynamicResource MacosTextPrimaryBrush}" Text="提示词" />
+            <StackPanel Grid.Row="10" Margin="4,0,0,4">
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                    <Button x:Name="PromptOpenFolder" AutomationProperties.AutomationId="PromptOpenFolder"
+                            Content="打开提示词文件夹" MinWidth="150" Click="OnOpenPromptsFolderClick" />
+                    <TextBlock Text="外置目录：%APPDATA%\AgentCompany\prompts\" Margin="12,0,0,0" FontSize="{DynamicResource MacosFontSizeCaption}"
+                               Opacity="0.55" VerticalAlignment="Center"
+                               Foreground="{DynamicResource MacosTextSecondaryBrush}" />
+                </StackPanel>
+                <TextBlock FontSize="{DynamicResource MacosFontSizeCaption}" Opacity="0.55" Margin="0,0,0,10" TextWrapping="Wrap"
+                           Foreground="{DynamicResource MacosTextSecondaryBrush}"
+                           Text="四处提示词均可外置修改：外置文件不存在或内容非法（缺必含锚点）时自动回退内置词，公司照常运转。[保存此份] 前按锚点表校验，缺锚点不落盘；[恢复默认] 删除该键外置文件（不存在也视为成功）。" />
+
+                <!-- planner -->
+                <StackPanel Margin="0,0,0,12">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                        <TextBlock Text="planner" FontSize="{DynamicResource MacosFontSizeBody}" FontWeight="SemiBold" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                        <TextBlock x:Name="PromptStatus_planner" AutomationProperties.AutomationId="PromptStatus_planner"
+                                   Text="内置" FontSize="{DynamicResource MacosFontSizeCaption}" Margin="8,0,0,0" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBox x:Name="PromptEditor_planner" AutomationProperties.AutomationId="PromptEditor_planner"
+                             MinHeight="120" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                             FontFamily="Consolas, Microsoft YaHei UI" FontSize="{DynamicResource MacosFontSizeCaption}" Padding="8,6" />
+                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                        <Button x:Name="PromptSave_planner" AutomationProperties.AutomationId="PromptSave_planner"
+                                Tag="planner" Content="保存此份" MinWidth="100" Click="OnPromptSaveClick" />
+                        <Button x:Name="PromptReset_planner" AutomationProperties.AutomationId="PromptReset_planner"
+                                Tag="planner" Content="恢复默认" MinWidth="100" Margin="10,0,0,0" Click="OnPromptResetClick" />
+                    </StackPanel>
+                    <!-- 红色提示行：保存/恢复失败原因（缺哪些锚点等），与 PromptStore 诊断口径一致 -->
+                    <TextBlock x:Name="PromptHint_planner" AutomationProperties.AutomationId="PromptHint_planner"
+                               FontSize="{DynamicResource MacosFontSizeCaption}" Margin="0,4,0,0" TextWrapping="Wrap" Foreground="{DynamicResource MacosDangerBrush}" Text="" />
+                </StackPanel>
+
+                <!-- claude -->
+                <StackPanel Margin="0,0,0,12">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                        <TextBlock Text="claude" FontSize="{DynamicResource MacosFontSizeBody}" FontWeight="SemiBold" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                        <TextBlock x:Name="PromptStatus_claude" AutomationProperties.AutomationId="PromptStatus_claude"
+                                   Text="内置" FontSize="{DynamicResource MacosFontSizeCaption}" Margin="8,0,0,0" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBox x:Name="PromptEditor_claude" AutomationProperties.AutomationId="PromptEditor_claude"
+                             MinHeight="120" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                             FontFamily="Consolas, Microsoft YaHei UI" FontSize="{DynamicResource MacosFontSizeCaption}" Padding="8,6" />
+                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                        <Button x:Name="PromptSave_claude" AutomationProperties.AutomationId="PromptSave_claude"
+                                Tag="claude" Content="保存此份" MinWidth="100" Click="OnPromptSaveClick" />
+                        <Button x:Name="PromptReset_claude" AutomationProperties.AutomationId="PromptReset_claude"
+                                Tag="claude" Content="恢复默认" MinWidth="100" Margin="10,0,0,0" Click="OnPromptResetClick" />
+                    </StackPanel>
+                    <TextBlock x:Name="PromptHint_claude" AutomationProperties.AutomationId="PromptHint_claude"
+                               FontSize="{DynamicResource MacosFontSizeCaption}" Margin="0,4,0,0" TextWrapping="Wrap" Foreground="{DynamicResource MacosDangerBrush}" Text="" />
+                </StackPanel>
+
+                <!-- opencode -->
+                <StackPanel Margin="0,0,0,12">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                        <TextBlock Text="opencode" FontSize="{DynamicResource MacosFontSizeBody}" FontWeight="SemiBold" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                        <TextBlock x:Name="PromptStatus_opencode" AutomationProperties.AutomationId="PromptStatus_opencode"
+                                   Text="内置" FontSize="{DynamicResource MacosFontSizeCaption}" Margin="8,0,0,0" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBox x:Name="PromptEditor_opencode" AutomationProperties.AutomationId="PromptEditor_opencode"
+                             MinHeight="120" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                             FontFamily="Consolas, Microsoft YaHei UI" FontSize="{DynamicResource MacosFontSizeCaption}" Padding="8,6" />
+                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                        <Button x:Name="PromptSave_opencode" AutomationProperties.AutomationId="PromptSave_opencode"
+                                Tag="opencode" Content="保存此份" MinWidth="100" Click="OnPromptSaveClick" />
+                        <Button x:Name="PromptReset_opencode" AutomationProperties.AutomationId="PromptReset_opencode"
+                                Tag="opencode" Content="恢复默认" MinWidth="100" Margin="10,0,0,0" Click="OnPromptResetClick" />
+                    </StackPanel>
+                    <TextBlock x:Name="PromptHint_opencode" AutomationProperties.AutomationId="PromptHint_opencode"
+                               FontSize="{DynamicResource MacosFontSizeCaption}" Margin="0,4,0,0" TextWrapping="Wrap" Foreground="{DynamicResource MacosDangerBrush}" Text="" />
+                </StackPanel>
+
+                <!-- crush -->
+                <StackPanel Margin="0,0,0,12">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                        <TextBlock Text="crush" FontSize="{DynamicResource MacosFontSizeBody}" FontWeight="SemiBold" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                        <TextBlock x:Name="PromptStatus_crush" AutomationProperties.AutomationId="PromptStatus_crush"
+                                   Text="内置" FontSize="{DynamicResource MacosFontSizeCaption}" Margin="8,0,0,0" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBox x:Name="PromptEditor_crush" AutomationProperties.AutomationId="PromptEditor_crush"
+                             MinHeight="120" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                             FontFamily="Consolas, Microsoft YaHei UI" FontSize="{DynamicResource MacosFontSizeCaption}" Padding="8,6" />
+                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                        <Button x:Name="PromptSave_crush" AutomationProperties.AutomationId="PromptSave_crush"
+                                Tag="crush" Content="保存此份" MinWidth="100" Click="OnPromptSaveClick" />
+                        <Button x:Name="PromptReset_crush" AutomationProperties.AutomationId="PromptReset_crush"
+                                Tag="crush" Content="恢复默认" MinWidth="100" Margin="10,0,0,0" Click="OnPromptResetClick" />
+                    </StackPanel>
+                    <TextBlock x:Name="PromptHint_crush" AutomationProperties.AutomationId="PromptHint_crush"
+                               FontSize="{DynamicResource MacosFontSizeCaption}" Margin="0,4,0,0" TextWrapping="Wrap" Foreground="{DynamicResource MacosDangerBrush}" Text="" />
+                </StackPanel>
+            </StackPanel>
+
+            <!-- 关于 + 默认值 -->
+            <TextBlock Grid.Row="11" Margin="0,24,0,8" FontSize="{DynamicResource MacosFontSizeBody}" FontWeight="SemiBold"
+                       Foreground="{DynamicResource MacosTextPrimaryBrush}" Text="关于" />
+            <StackPanel Grid.Row="12" Margin="4,0,0,4">
+                <!-- AutomationId 挂外层 TextBlock：Run 不是 UIElement，挂 Run 上 UIA 寻址不到 -->
+                <TextBlock FontSize="{DynamicResource MacosFontSizeBody}" AutomationProperties.AutomationId="AboutVersion">
+                    <Run Text="小公司 · Agent 指挥中心　版本 " />
+                    <Run x:Name="AboutVersionRun" FontWeight="SemiBold" Text="1.1.1" />
+                </TextBlock>
+                <TextBlock FontSize="{DynamicResource MacosFontSizeCaption}" Opacity="0.55" Margin="0,4,0,10"
+                           Foreground="{DynamicResource MacosTextSecondaryBrush}"
+                           Text="三数字员工（claude·CEO / opencode·执行 / crush·评审）· DAG 拆解 · 审批门 · 预算熔断 · 崩溃恢复 · 多任务并行。详见随附《使用手册.md》。" />
+                <Button Content="恢复默认" HorizontalAlignment="Left" MinWidth="120" Click="OnResetClick" />
+                <TextBlock Margin="0,8,0,0" FontSize="{DynamicResource MacosFontSizeCaption}" Opacity="0.55"
+                           Foreground="{DynamicResource MacosTextSecondaryBrush}"
+                           Text="恢复主题“跟随系统”、超时 180 秒、并发 2，并清空工作区根与三个 CLI 路径覆盖（回到默认：exe 旁 workspace\ + PATH 查找）" />
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

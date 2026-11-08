@@ -1,0 +1,9 @@
+- insert:
+    - id: claude-mcp
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: claude
+        transport: stdio
+        command: cmd
+        args: [/c, claude, mcp, serve]
+        failOnStartupError: true

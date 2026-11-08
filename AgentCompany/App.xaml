@@ -1,0 +1,17 @@
+<Application x:Class="AgentCompany.Desktop.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.modernwpf.com/2019">
+    <!-- 注意：XamlControlsResources 必须挂在 MainWindow 级（见 MainWindow.xaml）。
+         挂在 Application 级会导致 WPF 的 WM_GETOBJECT / UIA 无障碍树失效。 -->
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ui:ThemeResources />
+                <!-- M5b：macOS 设计 token 占位位（默认亮色；ThemeController.Apply 按主题热切 Light/Dark 实例）。
+                     纯资源字典挂 Application 级安全——会破坏 UIA 树的是 XamlControlsResources（控件样式），仍在 MainWindow 级。 -->
+                <ResourceDictionary Source="Themes/MacOSTokens.Light.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

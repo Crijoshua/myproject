@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Version>1.1.1</Version>
+    <!-- M1「引擎下沉」：纯引擎库，供后续新终端项目复用 -->
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <!-- 仅为 Dispatcher 线程编组类型（EventBus/BudgetService/A2aGateway），不写任何 UI -->
+    <UseWPF>true</UseWPF>
+    <RootNamespace>AgentCompany.Desktop</RootNamespace>
+    <AssemblyName>AgentCompany.Engine</AssemblyName>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.13" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- 引擎 internal 成员(EvaluateWatchdog/StepStatusPhrase/IsRealArtifact 等)供单测访问,
+         与根 AssemblyInfo.cs 中 Desktop 程序集的声明同口径(轮 1.1 引擎下沉补齐) -->
+    <InternalsVisibleTo Include="AgentCompany.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AgentCompany.Core\AgentCompany.Core.csproj" />
+  </ItemGroup>
+
+</Project>

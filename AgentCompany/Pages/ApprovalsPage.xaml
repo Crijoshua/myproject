@@ -1,0 +1,140 @@
+<UserControl x:Class="AgentCompany.Desktop.Pages.ApprovalsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Resources>
+        <Style x:Key="Panel" TargetType="Border">
+            <Setter Property="CornerRadius" Value="{DynamicResource MacosRadiusCard}" />
+            <Setter Property="Padding" Value="14" />
+            <Setter Property="Background" Value="{DynamicResource MacosBackgroundElevatedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource MacosSeparatorBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Effect" Value="{DynamicResource MacosCardShadow}" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="28,20,24,12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="审批中心" FontSize="{DynamicResource MacosFontSizeTitle}" FontWeight="SemiBold"
+                   Foreground="{DynamicResource MacosTextPrimaryBrush}" />
+        <TextBlock Grid.Row="1" Margin="0,4,0,12" FontSize="{DynamicResource MacosFontSizeBody}" Opacity="0.7"
+                   Foreground="{DynamicResource MacosTextSecondaryBrush}"
+                   Text="白名单外的命令在此放行（每条独立倒计时，等待上限 120 秒，超时按拒绝处理）。多任务并行时按来源任务区分，逐条批准/拒绝。" />
+
+        <!-- 待审批列表（轮 7：来源任务 + 独立倒计时；只逐条批准，无"全部批准"；提供"全部拒绝"） -->
+        <Grid Grid.Row="2" Margin="0,0,0,6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock FontSize="{DynamicResource MacosFontSizeBody}" FontWeight="SemiBold"
+                       Foreground="{DynamicResource MacosTextPrimaryBrush}" Text="待审批" />
+            <Button Grid.Column="1" x:Name="DenyAllButton" Content="全部拒绝" MinWidth="96"
+                    AutomationProperties.AutomationId="DenyAllButton"
+                    Click="OnDenyAllClick" />
+        </Grid>
+        <Grid Grid.Row="3">
+            <!-- 空态 -->
+            <StackPanel x:Name="EmptyState" AutomationProperties.AutomationId="ApprovalEmpty"
+                        VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="&#xE723;" FontFamily="Segoe MDL2 Assets" FontSize="40" Opacity="0.35"
+                           HorizontalAlignment="Center" Margin="0,0,0,10"
+                           Foreground="{DynamicResource MacosTextSecondaryBrush}" />
+                <TextBlock FontSize="{DynamicResource MacosFontSizeBody}" HorizontalAlignment="Center" Opacity="0.7"
+                           Foreground="{DynamicResource MacosTextSecondaryBrush}"
+                           Text="暂无待审批动作" />
+            </StackPanel>
+
+            <ScrollViewer x:Name="PendingScroll" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+                <ItemsControl x:Name="PendingList" AutomationProperties.AutomationId="PendingList">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource Panel}" Margin="0,0,0,8" Padding="12">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding SourceText}" FontSize="{DynamicResource MacosFontSizeCaption}" Margin="0,0,0,4"
+                                               AutomationProperties.AutomationId="ApprovalSource"
+                                               Foreground="{DynamicResource MacosAccentBrush}"
+                                               FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding Command}" TextWrapping="Wrap" FontSize="{DynamicResource MacosFontSizeBody}"
+                                               AutomationProperties.AutomationId="ApprovalCommand"
+                                               FontFamily="Consolas, Microsoft YaHei UI" />
+                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                        <TextBlock Text="{Binding Agent}" FontSize="{DynamicResource MacosFontSizeCaption}" VerticalAlignment="Center"
+                                                   Foreground="{DynamicResource MacosTextSecondaryBrush}" />
+                                        <TextBlock Text="{Binding RequestedAtText}" Margin="14,0,0,0" FontSize="{DynamicResource MacosFontSizeCaption}"
+                                                   VerticalAlignment="Center"
+                                                   Foreground="{DynamicResource MacosTextSecondaryBrush}" />
+                                        <TextBlock Text="{Binding RemainingText}" Margin="14,0,0,0" FontSize="{DynamicResource MacosFontSizeCaption}"
+                                                   AutomationProperties.AutomationId="ApprovalCountdown"
+                                                   VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{DynamicResource MacosWarningBrush}" />
+                                        <Button Style="{DynamicResource MacosAccentButton}" Content="批准" MinWidth="80" Margin="18,0,0,0"
+                                                AutomationProperties.AutomationId="ApproveButton"
+                                                Click="OnApproveClick" Tag="{Binding}" />
+                                        <Button Content="拒绝" MinWidth="80" Margin="10,0,0,0"
+                                                AutomationProperties.AutomationId="DenyButton"
+                                                Click="OnDenyClick" Tag="{Binding}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- 审批历史 -->
+        <TextBlock Grid.Row="4" Margin="0,14,0,6" FontSize="{DynamicResource MacosFontSizeBody}" FontWeight="SemiBold"
+                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" Text="审批历史（最近 200 条，落库持久）" />
+        <Border Grid.Row="5" Style="{StaticResource Panel}" Padding="2">
+            <ListView x:Name="HistoryList" AutomationProperties.AutomationId="ApprovalHistory"
+                      BorderThickness="0" Background="Transparent"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                      VirtualizingPanel.IsVirtualizing="True"
+                      VirtualizingPanel.VirtualizationMode="Recycling">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="员工" Width="90" DisplayMemberBinding="{Binding Agent}" />
+                        <GridViewColumn Header="命令" Width="420">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Command}" TextTrimming="CharacterEllipsis"
+                                               FontFamily="Consolas, Microsoft YaHei UI" FontSize="{DynamicResource MacosFontSizeCaption}" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="决定" Width="90">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Decision}" FontWeight="SemiBold">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="{DynamicResource MacosDangerBrush}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Decision}" Value="approved">
+                                                        <Setter Property="Foreground" Value="{DynamicResource MacosSuccessBrush}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Decision}" Value="timeout">
+                                                        <Setter Property="Foreground" Value="{DynamicResource MacosWarningBrush}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="请求时间" Width="150" DisplayMemberBinding="{Binding RequestedAtText}" />
+                        <GridViewColumn Header="决定时间" Width="150" DisplayMemberBinding="{Binding DecidedAtText}" />
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Border>
+    </Grid>
+</UserControl>
