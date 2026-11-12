@@ -1,0 +1,9 @@
+{
+  "tagOwners": {
+    "tag:server": ["<OWNER_ACCOUNT>"],
+    "tag:mobile": ["<OWNER_ACCOUNT>"]
+  },
+  "grants": [
+    { "src": ["tag:mobile"], "dst": ["tag:server"], "ip": ["tcp:443"] }
+  ]
+}
