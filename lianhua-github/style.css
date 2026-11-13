@@ -1,0 +1,1379 @@
+/* ============================================================
+   最终练化 · FF15 风格主题（M0）
+   深色 / 衬线 / 细线 / 留白 —— 颜色与尺寸全部集中在 :root
+   ============================================================ */
+
+:root {
+  /* 颜色 */
+  --bg: #0a0a0c;                       /* 近纯黑背景 */
+  --fg: #c8ccd0;                       /* 主文字 · 银白 */
+  --fg-strong: #eef1f4;                /* 高亮文字 */
+  --fg-dim: #6b7480;                   /* 次要文字 */
+  --accent: #5b7a99;                   /* 强调 · 钢蓝 */
+  --accent-bright: #8fa9c4;            /* 角线、菱形光标用的亮钢蓝 */
+  --line: rgba(91, 122, 153, 0.35);    /* 分隔细线 */
+  --glow: rgba(91, 122, 153, 0.45);    /* 文字微光 */
+
+  /* 字体 */
+  --font-serif: "Songti SC", "STSong", "Noto Serif SC", serif;
+
+  /* 节奏 */
+  --nav-letter-space: 0.25em;          /* 导航与标题字距 */
+  --dur: 0.25s;                        /* 统一过渡时长 */
+}
+
+/* ---------- 基础 ---------- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { height: 100%; }
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;                  /* iPhone 动态视口，地址栏收起时不留缝 */
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-serif);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.tab:focus-visible,
+.btn-start:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* 所有可点元素：够大的触控区、无点按高亮、禁选中、去掉双击缩放延迟 */
+.tab,
+.btn-start {
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+/* ---------- 底部导航栏 ---------- */
+.topbar {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  padding: 0 8px calc(env(safe-area-inset-bottom) + 10px);   /* 底部安全区（Home 指示条） */
+  background: rgba(10, 10, 12, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-top: 1px solid var(--line);
+}
+
+.topbar-nav { display: flex; }
+
+.tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45em;
+  padding: 12px 0 4px;   /* 底部留白由导航栏自身 padding 补足 */
+  font-size: 15px;
+  letter-spacing: var(--nav-letter-space);
+  color: var(--fg-dim);
+  transition: color var(--dur) ease;
+}
+
+/* 中文 letter-spacing 会在末字后多出一段，负外边距补回，保证视觉居中 */
+.tab-label { margin-right: calc(var(--nav-letter-space) * -1); }
+
+/* ◆ 菱形光标：仅当前页标签显示 */
+.tab-cursor {
+  font-size: 8px;
+  color: var(--accent-bright);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity var(--dur) ease, transform var(--dur) ease;
+}
+
+.tab.active {
+  color: var(--fg-strong);
+  text-shadow: 0 0 10px var(--glow);
+}
+
+.tab.active .tab-cursor {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (hover: hover) {
+  .tab:hover { color: var(--fg-strong); }
+}
+
+/* ---------- 主内容区 ---------- */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 20px 40px;   /* 底部安全区已由导航栏承担 */
+}
+
+/* 页面容器：默认隐藏，激活时 0.25s 淡入 */
+.page { display: none; }
+
+.page.active {
+  display: block;
+  animation: pageFade var(--dur) ease both;
+}
+
+@keyframes pageFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* 主页：整屏竖直居中，标题画面式布局 */
+.page-home.active {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- 面板/卡片：透明底 + 细边框 + FF 经典角标 ---------- */
+.panel {
+  position: relative;
+  background: transparent;
+  border: 1px solid var(--line);
+}
+
+/* 左上 / 右下两个 10px L 形角线 */
+.panel::before,
+.panel::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+}
+
+.panel::before {
+  top: -1px;
+  left: -1px;
+  border-top: 2px solid var(--accent-bright);
+  border-left: 2px solid var(--accent-bright);
+}
+
+.panel::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 2px solid var(--accent-bright);
+  border-right: 2px solid var(--accent-bright);
+}
+
+/* ---------- 主页「训练开始」按钮 ---------- */
+.btn-start {
+  font-size: 3rem;
+  letter-spacing: 0.3em;
+  /* 左内边距同步补偿末字字距，文字在框内居中 */
+  padding: 30px 38px 30px calc(38px + 0.3em);
+  color: var(--fg);
+  transition: color var(--dur) ease, border-color var(--dur) ease, text-shadow var(--dur) ease;
+}
+
+.btn-start:active {
+  color: var(--fg-strong);
+  border-color: var(--accent);
+  text-shadow: 0 0 16px var(--glow);
+}
+
+@media (hover: hover) {
+  .btn-start:hover {
+    color: var(--fg-strong);
+    border-color: var(--accent);
+    text-shadow: 0 0 16px var(--glow);
+  }
+}
+
+/* ---------- 计划 / 历史页 ---------- */
+.page-head { margin-bottom: 20px; }
+
+.page-title {
+  font-size: 15px;
+  font-weight: normal;
+  letter-spacing: var(--nav-letter-space);
+  color: var(--fg-dim);
+}
+
+/* 标题前的短横线装饰 */
+.page-title::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 1px;
+  background: var(--accent);
+  margin-right: 0.8em;
+  vertical-align: middle;
+}
+
+.empty-state {
+  padding: 56px 24px;
+  text-align: center;
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  color: var(--fg-dim);
+}
+
+/* ============================================================
+   ---------- M2 计划页 ----------
+   ============================================================ */
+
+/* hidden 属性在带 display 规则的元素上需要强制生效 */
+[hidden] { display: none !important; }
+
+/* 覆盖层打开时锁住背景滚动 */
+body.locked { overflow: hidden; }
+
+/* ---------- 计划条目列表 ---------- */
+.plan-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.plan-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+  min-height: 44px;
+  padding: 14px 4px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: background-color var(--dur) ease;
+}
+
+.plan-item:active { background: rgba(91, 122, 153, 0.12); }
+
+.item-index {
+  min-width: 1.8em;
+  font-size: 13px;
+  color: var(--accent-bright);
+}
+
+.item-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.item-name {
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  color: var(--fg-strong);
+}
+
+.item-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag {
+  padding: 1px 7px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--fg-dim);
+  border: 1px solid var(--line);
+}
+
+.item-summary {
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: var(--fg-dim);
+}
+
+/* ---------- 添加动作按钮 ---------- */
+.add-exercise {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 20px;
+  padding: 14px;
+  text-align: center;
+  font-size: 15px;
+  letter-spacing: 0.2em;
+  color: var(--accent-bright);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: color var(--dur) ease, border-color var(--dur) ease, text-shadow var(--dur) ease;
+}
+
+.add-exercise:active {
+  color: var(--fg-strong);
+  border-color: var(--accent);
+  text-shadow: 0 0 12px var(--glow);
+}
+
+/* 空状态错误变体 */
+.empty-error {
+  color: var(--fg);
+  border-color: var(--accent);
+}
+
+/* ---------- 全屏覆盖层基座 ---------- */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;   /* 高于底部导航栏 */
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  animation: pageFade var(--dur) ease both;
+}
+
+/* ---------- 动作库面板 ---------- */
+.lib-overlay {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.ov-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.ov-title {
+  font-size: 15px;
+  font-weight: normal;
+  letter-spacing: 0.25em;
+  color: var(--fg-strong);
+}
+
+.ov-close {
+  min-height: 44px;
+  padding: 0 8px;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: var(--fg-dim);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: color var(--dur) ease;
+}
+
+.ov-close:active { color: var(--fg-strong); }
+
+.lib-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.lib-search {
+  min-height: 44px;
+  padding: 0 14px;
+  font-family: var(--font-serif);
+  font-size: 15px;
+  letter-spacing: 0.05em;
+  color: var(--fg);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  transition: border-color var(--dur) ease;
+}
+
+.lib-search:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.lib-search::placeholder { color: var(--fg-dim); }
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  min-height: 44px;
+  padding: 0 15px;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: var(--fg-dim);
+  background: transparent;
+  border: 1px solid var(--line);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: color var(--dur) ease, border-color var(--dur) ease;
+}
+
+.chip.active {
+  color: var(--fg-strong);
+  border-color: var(--accent-bright);
+  text-shadow: 0 0 8px var(--glow);
+}
+
+.lib-results {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 20px 20px;
+}
+
+.lib-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  min-height: 44px;
+  padding: 12px 4px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.lib-name {
+  font-size: 15px;
+  color: var(--fg);
+  transition: color var(--dur) ease;
+}
+
+.lib-row:active .lib-name { color: var(--fg-strong); }
+
+.lib-meta {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--fg-dim);
+}
+
+.lib-note {
+  padding: 48px 0;
+  text-align: center;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  color: var(--fg-dim);
+}
+
+/* ---------- 动作配置面板 ---------- */
+.cfg-overlay {
+  padding: calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 16px);
+  background: rgba(10, 10, 12, 0.96);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.cfg-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 100%;
+  margin: auto;
+  padding: 20px 18px;
+}
+
+/* 字段区内部滚动；主按钮在滚动区外常驻 */
+.cfg-scroll {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.cfg-head { padding-bottom: 2px; }
+
+.cfg-name {
+  font-size: 20px;
+  font-weight: normal;
+  letter-spacing: 0.08em;
+  color: var(--fg-strong);
+}
+
+.cfg-tags {
+  margin-top: 5px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--fg-dim);
+}
+
+.cfg-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+}
+
+.cfg-label {
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  color: var(--fg-dim);
+}
+
+/* 二选一分段控件 */
+.seg {
+  display: flex;
+  border: 1px solid var(--line);
+}
+
+.seg-btn {
+  min-height: 44px;
+  padding: 0 18px;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: var(--fg-dim);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: color var(--dur) ease, background-color var(--dur) ease;
+}
+
+.seg-btn.active {
+  color: var(--fg-strong);
+  background: rgba(91, 122, 153, 0.18);
+  text-shadow: 0 0 8px var(--glow);
+}
+
+/* 步进器：− / 数值 / + */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.step-btn {
+  width: 44px;
+  height: 44px;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--accent-bright);
+  border: 1px solid var(--line);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: color var(--dur) ease, border-color var(--dur) ease, opacity var(--dur) ease;
+}
+
+.step-btn:active {
+  color: var(--fg-strong);
+  border-color: var(--accent);
+}
+
+.step-btn:disabled { opacity: 0.3; }
+
+.step-val {
+  min-width: 56px;
+  text-align: center;
+  font-size: 17px;
+  color: var(--fg-strong);
+}
+
+.step-unit {
+  font-size: 11px;
+  color: var(--fg-dim);
+  margin-left: -4px;
+}
+
+/* 编辑态：排序与删除 */
+.cfg-order {
+  display: flex;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.order-btn {
+  flex: 1;
+  min-height: 44px;
+  font-size: 14px;
+  letter-spacing: 0.2em;
+  color: var(--fg);
+  border: 1px solid var(--line);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: color var(--dur) ease, border-color var(--dur) ease, opacity var(--dur) ease;
+}
+
+.order-btn:active {
+  color: var(--fg-strong);
+  border-color: var(--accent);
+}
+
+.order-btn:disabled { opacity: 0.3; }
+
+.cfg-delete {
+  width: 100%;
+  min-height: 44px;
+  font-size: 14px;
+  letter-spacing: 0.2em;
+  color: var(--fg-dim);
+  border: 1px solid var(--line);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: color var(--dur) ease, border-color var(--dur) ease;
+}
+
+.cfg-delete:active {
+  color: var(--fg-strong);
+  border-color: var(--accent);
+}
+
+/* 主按钮：常驻滚动区外 */
+.cfg-save {
+  flex-shrink: 0;
+  min-height: 52px;
+  font-size: 17px;
+  letter-spacing: 0.3em;
+  color: var(--fg-strong);
+  background: rgba(91, 122, 153, 0.15);
+  border: 1px solid var(--accent);
+  text-shadow: 0 0 10px var(--glow);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: background-color var(--dur) ease;
+}
+
+.cfg-save:active { background: rgba(91, 122, 153, 0.32); }
+
+/* ============================================================
+   ---------- M3 计划管理 ----------
+   ============================================================ */
+
+/* 计划页页头：计划名居左，管理按钮居右 */
+.plan-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.plan-manage-btn {
+  min-height: 44px;
+  padding: 0 4px 0 12px;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  color: var(--fg-dim);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: color var(--dur) ease;
+}
+
+.plan-manage-btn:active { color: var(--fg-strong); }
+
+/* ---------- 管理面板主体 ---------- */
+.mgr-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 20px 20px;
+}
+
+.mgr-create {
+  min-height: 48px;
+  font-size: 15px;
+  letter-spacing: 0.2em;
+  color: var(--accent-bright);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: color var(--dur) ease, border-color var(--dur) ease, text-shadow var(--dur) ease;
+}
+
+.mgr-create:active {
+  color: var(--fg-strong);
+  border-color: var(--accent);
+  text-shadow: 0 0 12px var(--glow);
+}
+
+/* 新建输入行 / 重命名输入行共用 */
+.mgr-create-row,
+.mgr-rename-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mgr-rename-row { flex: 1; min-width: 0; }
+
+.mgr-input {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 12px;
+  font-family: var(--font-serif);
+  font-size: 15px;
+  letter-spacing: 0.05em;
+  color: var(--fg);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  transition: border-color var(--dur) ease;
+}
+
+.mgr-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* 空名称被拒时的提示态 */
+.mgr-input.error { border-color: var(--accent-bright); }
+
+.mgr-input::placeholder { color: var(--fg-dim); }
+
+.mgr-yes,
+.mgr-no {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 0 14px;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: var(--fg-dim);
+  border: 1px solid var(--line);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: color var(--dur) ease, border-color var(--dur) ease;
+}
+
+.mgr-yes { color: var(--accent-bright); }
+
+.mgr-yes:active,
+.mgr-no:active {
+  color: var(--fg-strong);
+  border-color: var(--accent);
+}
+
+/* ---------- 计划列表 ---------- */
+.mgr-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.mgr-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 64px;
+  border-bottom: 1px solid var(--line);
+}
+
+.mgr-row-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 10px 4px;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.mgr-cursor {
+  flex-shrink: 0;
+  font-size: 8px;
+  color: var(--accent-bright);
+  opacity: 0;
+  transition: opacity var(--dur) ease;
+}
+
+.mgr-row.active .mgr-cursor {
+  opacity: 1;
+  text-shadow: 0 0 8px var(--glow);
+}
+
+.mgr-row-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mgr-row-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  color: var(--fg);
+  transition: color var(--dur) ease;
+}
+
+.mgr-row.active .mgr-row-name {
+  color: var(--fg-strong);
+  text-shadow: 0 0 10px var(--glow);
+}
+
+.mgr-row-count {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--fg-dim);
+}
+
+.mgr-row-actions {
+  flex-shrink: 0;
+  display: flex;
+  gap: 6px;
+}
+
+.mgr-rename,
+.mgr-del {
+  min-height: 44px;
+  padding: 0 10px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--fg-dim);
+  border: 1px solid var(--line);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: color var(--dur) ease, border-color var(--dur) ease, opacity var(--dur) ease;
+}
+
+.mgr-rename:active,
+.mgr-del:active {
+  color: var(--fg-strong);
+  border-color: var(--accent);
+}
+
+.mgr-del:disabled { opacity: 0.3; }
+
+/* ============================================================
+   ---------- M4 训练流程 ----------
+   ============================================================ */
+
+/* 主页渲染容器：占满主页剩余空间 */
+#session-root {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.session-screen {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 会话内容主体：竖直居中 */
+.session-main {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+
+/* ---------- 会话条 ---------- */
+.session-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 6px 6px 14px;
+  border: 1px solid var(--line);
+  background: rgba(91, 122, 153, 0.08);
+}
+
+.session-bar-plan {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--fg-dim);
+}
+
+.session-bar-time {
+  flex-shrink: 0;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--accent-bright);
+  font-variant-numeric: tabular-nums;
+}
+
+.session-end {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 0 10px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--fg-dim);
+  border: 1px solid var(--line);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: color var(--dur) ease, border-color var(--dur) ease;
+}
+
+.session-end:active {
+  color: var(--fg-strong);
+  border-color: var(--accent);
+}
+
+/* ---------- 会话画面元素 ---------- */
+.session-state-label {
+  font-size: 13px;
+  letter-spacing: 0.35em;
+  margin-right: -0.35em;   /* 补偿末字字距 */
+  color: var(--accent-bright);
+}
+
+.session-ex-name {
+  font-size: 2rem;
+  letter-spacing: 0.12em;
+  text-align: center;
+  color: var(--fg-strong);
+  text-shadow: 0 0 18px var(--glow);
+}
+
+.session-setinfo {
+  font-size: 15px;
+  letter-spacing: 0.25em;
+  margin-right: -0.25em;
+  color: var(--fg);
+}
+
+.session-params {
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: var(--fg-dim);
+}
+
+/* 大号数字读数（走秒 / 倒计时） */
+.session-count-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.session-count {
+  font-size: 4.5rem;
+  line-height: 1;
+  color: var(--fg-strong);
+  text-shadow: 0 0 26px var(--glow);
+  font-variant-numeric: tabular-nums;
+}
+
+.session-count-word {
+  font-size: 2.6rem;
+  letter-spacing: 0.3em;
+  margin-right: -0.3em;
+}
+
+.session-count-unit {
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: var(--fg-dim);
+}
+
+.session-sub {
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: var(--fg-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.session-next {
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: var(--fg-dim);
+}
+
+.session-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* 次要按钮（放弃 / +15秒 / 跳过休息 / 返回） */
+.session-secondary {
+  min-height: 44px;
+  padding: 0 18px;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: var(--fg-dim);
+  background: transparent;
+  border: 1px solid var(--line);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: color var(--dur) ease, border-color var(--dur) ease;
+}
+
+.session-secondary:active {
+  color: var(--fg-strong);
+  border-color: var(--accent);
+}
+
+/* ---------- 训练完成（summary） ---------- */
+.summary-title {
+  font-size: 2.2rem;
+  letter-spacing: 0.3em;
+  margin-right: -0.3em;
+  color: var(--fg-strong);
+  text-shadow: 0 0 24px var(--glow);
+}
+
+.summary-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 24px;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: var(--fg);
+}
+
+.summary-stats b {
+  font-weight: normal;
+  color: var(--accent-bright);
+}
+
+.summary-rows {
+  width: 100%;
+  max-width: 320px;
+}
+
+.summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+}
+
+.summary-row-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--fg);
+}
+
+.summary-row-count {
+  flex-shrink: 0;
+  color: var(--accent-bright);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   ---------- M5 训练历史 ----------
+   ============================================================ */
+
+/* ---------- 历史列表 ---------- */
+.history-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 14px 4px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: background-color var(--dur) ease;
+}
+
+.history-item:active { background: rgba(91, 122, 153, 0.12); }
+
+.history-date {
+  flex-shrink: 0;
+  min-width: 5.4em;
+  font-size: 13px;
+  color: var(--accent-bright);
+  font-variant-numeric: tabular-nums;
+}
+
+.history-plan {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+  letter-spacing: 0.05em;
+  color: var(--fg-strong);
+}
+
+.history-meta {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.history-duration {
+  font-size: 12px;
+  color: var(--fg-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.history-sets {
+  font-size: 12px;
+  color: var(--fg);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 训练详情覆盖层 ---------- */
+.detail-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 20px calc(env(safe-area-inset-bottom) + 20px);
+}
+
+.detail-head {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.detail-date {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--accent-bright);
+  font-variant-numeric: tabular-nums;
+}
+
+.detail-plan {
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  color: var(--fg-strong);
+}
+
+.detail-duration {
+  font-size: 13px;
+  color: var(--fg-dim);
+}
+
+.detail-stats {
+  display: flex;
+  gap: 18px;
+  padding: 10px 14px;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--fg);
+  border: 1px solid var(--line);
+  background: rgba(91, 122, 153, 0.08);
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+}
+
+.detail-item-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.detail-item-name {
+  font-size: 16px;
+  letter-spacing: 0.05em;
+  color: var(--fg-strong);
+}
+
+.detail-params {
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  color: var(--fg-dim);
+}
+
+.detail-sets {
+  display: flex;
+  flex-direction: column;
+}
+
+.set-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 44px;
+  padding: 8px 2px;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+  color: var(--fg);
+}
+
+.set-row:last-child { border-bottom: none; }
+
+.set-check {
+  color: var(--accent-bright);
+}
+
+/* 未完成的组：灰色占位，无 ✓ */
+.set-row.set-missed { color: var(--fg-dim); }
+
+/* ============================================================
+   ---------- M6 数据管理 ----------
+   ============================================================ */
+
+.data-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px calc(env(safe-area-inset-right) + 20px) calc(env(safe-area-inset-bottom) + 20px) calc(env(safe-area-inset-left) + 20px);
+}
+
+.data-action {
+  min-height: 56px;
+  font-size: 16px;
+  letter-spacing: 0.25em;
+  margin-right: -0.25em;   /* 补偿末字字距，视觉居中 */
+  color: var(--fg);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: color var(--dur) ease, border-color var(--dur) ease, text-shadow var(--dur) ease;
+}
+
+.data-action:active {
+  color: var(--fg-strong);
+  border-color: var(--accent);
+  text-shadow: 0 0 12px var(--glow);
+}
+
+/* 清空按钮：灰调示警，激活时也不点亮文字 */
+.data-danger {
+  color: var(--fg-dim);
+}
+
+.data-danger:active {
+  color: var(--fg-dim);
+  border-color: var(--accent);
+}
+
+.data-hint {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--fg-dim);
+}
+
+/* ============================================================
+   ---------- 中英双语显示（纯显示层增强，不影响功能） ----------
+   英文跟在中文后：约为中文的 72%，但不小于 10px，保证可读。
+   ============================================================ */
+.en {
+  font-size: max(10px, 0.72em);
+  letter-spacing: 0.03em;   /* 覆盖继承自中文的大字距 */
+  margin-left: 0.3em;
+  opacity: 0.92;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 大标题类元素：英文换行成副标题，避免横向溢出 */
+.btn-start .en {
+  display: block;
+  margin: 14px 0 0;
+  font-size: max(12px, 0.4em);
+  letter-spacing: 0.16em;
+  opacity: 1;
+}
+
+.session-ex-name .en {
+  display: block;
+  margin: 8px 0 0;
+  font-size: max(11px, 0.45em);
+  letter-spacing: 0.08em;
+  opacity: 0.9;
+}
+
+.summary-title .en {
+  display: block;
+  margin: 12px 0 -0.2em;
+  font-size: max(11px, 0.4em);
+  letter-spacing: 0.2em;
+  opacity: 0.9;
+}
+
+.cfg-name .en {
+  display: block;
+  margin: 6px 0 0;
+  font-size: max(10px, 0.6em);
+}
